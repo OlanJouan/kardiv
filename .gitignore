@@ -1,0 +1,28 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dépendances
+node_modules/
+
+# Fichiers temporaires
+*.tmp
+*.log
+
+# Environnement
+.env
+.env.local
+
+# Tests temporaires
+*-test*.jpg
+*-test*.webp
+*-candidate*.jpg
+*-candidate*.webp
+*-old.jpg
+*-old.webp
