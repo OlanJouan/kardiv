@@ -59,7 +59,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const stripe = new Stripe(secretKey, { apiVersion: '2026-06-24.dahlia' });
+  const stripe = new Stripe(secretKey);
 
   try {
     const body = req.body || {};
@@ -113,6 +113,6 @@ module.exports = async function handler(req, res) {
     console.error('Erreur Stripe :', err);
     return res
       .status(500)
-      .json({ error: "Le paiement n'a pas pu être initialisé. Réessayez plus tard." });
+      .json({ error: "Le paiement n'a pas pu être initialisé. Réessayez plus tard.", debug: err.message });
   }
 };
