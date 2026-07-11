@@ -88,9 +88,9 @@
       <div class="footer-bottom">
         <p>© 2026 Kardiv. Tous droits réservés.</p>
         <ul class="footer-legal">
-          <li><a href="contact.html#mentions">Mentions légales</a></li>
-          <li><a href="contact.html#confidentialite">Politique de confidentialité</a></li>
-          <li><a href="contact.html#cgv">CGV</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="politique-confidentialite.html">Politique de confidentialité</a></li>
+          <li><a href="cgv.html">CGV</a></li>
         </ul>
       </div>
     </div>
