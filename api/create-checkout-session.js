@@ -113,6 +113,6 @@ module.exports = async function handler(req, res) {
     console.error('Erreur Stripe :', err);
     return res
       .status(500)
-      .json({ error: "Le paiement n'a pas pu être initialisé. Réessayez plus tard.", debug: err.message });
+      .json({ error: "Le paiement n'a pas pu être initialisé. Réessayez plus tard." });
   }
 };
