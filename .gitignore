@@ -26,3 +26,5 @@ node_modules/
 *-candidate*.webp
 *-old.jpg
 *-old.webp
+
+.vercel

@@ -189,8 +189,89 @@
     updateCartUI();
   }
 
+  // Regroupe les articles identiques en { name, quantity } pour Stripe.
+  function aggregateCart() {
+    const cart = loadCart();
+    const map = new Map();
+    cart.forEach((item) => {
+      const entry = map.get(item.name);
+      if (entry) {
+        entry.quantity += 1;
+      } else {
+        map.set(item.name, { name: item.name, quantity: 1 });
+      }
+    });
+    return Array.from(map.values());
+  }
+
+  // Envoie le panier à la fonction serveur, puis redirige vers la page
+  // de paiement sécurisée hébergée par Stripe.
+  async function startStripeCheckout() {
+    const cart = loadCart();
+    if (cart.length === 0) return;
+
+    const btn = document.getElementById('checkoutBtn');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Redirection…';
+    }
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: aggregateCart() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Le paiement est momentanément indisponible.');
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      alert(err.message || "Le paiement n'a pas pu être lancé. Réessayez.");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+  }
+
+  // Affiche le message de remerciement après un paiement réussi.
+  function showOrderSuccess() {
+    const { modal, form, summary, success } = getCheckoutElements();
+    if (!modal || !success) {
+      alert('Merci pour votre commande !');
+      return;
+    }
+    if (form) form.hidden = true;
+    if (summary) summary.innerHTML = '';
+    success.hidden = false;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Au retour de Stripe, lit le paramètre « paiement » dans l'URL.
+  function handlePaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('paiement');
+    if (!status) return;
+
+    // Nettoie l'URL pour ne pas rejouer le message au rechargement.
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (status === 'reussi') {
+      saveCart([]);
+      updateCartUI();
+      showOrderSuccess();
+    } else if (status === 'annule') {
+      openCart();
+    }
+  }
+
   function initCart() {
     updateCartUI();
+    handlePaymentReturn();
 
     const openBtn = document.querySelector('.cart-btn');
     const closeBtn = document.getElementById('closeCart');
@@ -205,7 +286,7 @@
     if (closeBtn) closeBtn.addEventListener('click', closeCart);
     if (overlay) overlay.addEventListener('click', closeCart);
 
-    if (checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
+    if (checkoutBtn) checkoutBtn.addEventListener('click', startStripeCheckout);
     if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', closeCheckout);
     if (checkoutOverlay) checkoutOverlay.addEventListener('click', closeCheckout);
     if (checkoutForm) checkoutForm.addEventListener('submit', submitCheckout);
@@ -239,6 +320,7 @@
     remove: removeFromCart,
     init: initCart,
     load: loadCart,
+    checkout: startStripeCheckout,
   };
 
   if (document.readyState === 'loading') {
