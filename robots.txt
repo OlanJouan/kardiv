@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.kardiv.com/sitemap.xml
+Sitemap: https://kardiv.vercel.app/sitemap.xml
