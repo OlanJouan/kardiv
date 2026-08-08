@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  // Remplacer ces IDs par ceux fournis par Formspree (https://formspree.io)
-  const FORMSPREE_CONTACT_ID = 'TON_ID_CONTACT';
-  const FORMSPREE_NEWSLETTER_ID = 'TON_ID_NEWSLETTER';
+  // Clé d'accès Web3Forms (https://web3forms.com) reliée à l'email de contact du site.
+  const WEB3FORMS_ACCESS_KEY = 'a337745d-aaae-4f5e-82ef-38beb14c7f35';
+  const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
 
   function showMessage(element, text, type) {
     if (!element) return;
@@ -11,20 +11,22 @@
     element.className = 'form-message ' + type;
   }
 
-  async function submitFormspree(endpoint, formData, successMessage, statusElement) {
+  async function submitWeb3Forms(formData, successMessage, statusElement) {
+    formData.append('access_key', WEB3FORMS_ACCESS_KEY);
+
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
         method: 'POST',
         body: formData,
         headers: { Accept: 'application/json' }
       });
+      const data = await response.json().catch(() => ({}));
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         showMessage(statusElement, successMessage, 'success');
         return true;
       } else {
-        const data = await response.json().catch(() => ({}));
-        showMessage(statusElement, data.error || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+        showMessage(statusElement, data.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
         return false;
       }
     } catch (error) {
@@ -47,9 +49,8 @@
       }
 
       const formData = new FormData(newsletterForm);
-      const endpoint = `https://formspree.io/f/${FORMSPREE_NEWSLETTER_ID}`;
-      const ok = await submitFormspree(
-        endpoint,
+      formData.append('subject', 'Nouvelle inscription à la newsletter Kardiv');
+      const ok = await submitWeb3Forms(
         formData,
         'Merci ! Vous êtes inscrite à la newsletter Kardiv.',
         formMessage
@@ -80,9 +81,7 @@
       }
 
       const formData = new FormData(contactForm);
-      const endpoint = `https://formspree.io/f/${FORMSPREE_CONTACT_ID}`;
-      const ok = await submitFormspree(
-        endpoint,
+      const ok = await submitWeb3Forms(
         formData,
         'Merci pour votre message. Nous vous répondrons sous 24 heures.',
         contactMessageStatus
