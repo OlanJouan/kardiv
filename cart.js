@@ -108,24 +108,9 @@
       modal: document.getElementById('checkoutModal'),
       overlay: document.getElementById('checkoutOverlay'),
       closeBtn: document.getElementById('closeCheckout'),
-      summary: document.getElementById('checkoutSummary'),
-      form: document.getElementById('checkoutForm'),
       success: document.getElementById('checkoutSuccess'),
       closeSuccess: document.getElementById('checkoutCloseSuccess'),
     };
-  }
-
-  function openCheckout() {
-    const cart = loadCart();
-    if (cart.length === 0) return;
-    const { modal } = getCheckoutElements();
-    if (!modal) return;
-    closeCart();
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    renderCheckoutSummary();
-    const firstInput = modal.querySelector('input');
-    if (firstInput) firstInput.focus();
   }
 
   function closeCheckout() {
@@ -135,58 +120,6 @@
     document.body.style.overflow = '';
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn) checkoutBtn.focus();
-  }
-
-  function resetCheckout() {
-    const { form, success } = getCheckoutElements();
-    if (form) {
-      form.reset();
-      form.hidden = false;
-    }
-    if (success) success.hidden = true;
-  }
-
-  function renderCheckoutSummary() {
-    const cart = loadCart();
-    const { summary } = getCheckoutElements();
-    if (!summary) return;
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    const itemsHtml = cart
-      .map((item) => `<p class="checkout-summary-item"><span>${item.name}</span><span>${formatPrice(item.price)}</span></p>`)
-      .join('');
-    summary.innerHTML = `
-      <h3 class="checkout-summary-title">Récapitulatif</h3>
-      ${itemsHtml}
-      <p class="checkout-summary-total"><span>Total</span><span>${formatPrice(total)}</span></p>
-    `;
-  }
-
-  function submitCheckout(e) {
-    e.preventDefault();
-    const { form, success } = getCheckoutElements();
-    if (!form || !success) return;
-
-    const formData = new FormData(form);
-    const name = formData.get('name')?.trim();
-    const email = formData.get('email')?.trim();
-    const phone = formData.get('phone')?.trim();
-    const address = formData.get('address')?.trim();
-    const city = formData.get('city')?.trim();
-    const postal = formData.get('postal')?.trim();
-
-    if (!name || !email || !phone || !address || !city || !postal) {
-      alert('Veuillez remplir tous les champs.');
-      return;
-    }
-    if (!email.includes('@')) {
-      alert('Veuillez entrer une adresse email valide.');
-      return;
-    }
-
-    form.hidden = true;
-    success.hidden = false;
-    saveCart([]);
-    updateCartUI();
   }
 
   // Regroupe les articles identiques en { name, quantity } pour Stripe.
@@ -239,13 +172,11 @@
 
   // Affiche le message de remerciement après un paiement réussi.
   function showOrderSuccess() {
-    const { modal, form, summary, success } = getCheckoutElements();
+    const { modal, success } = getCheckoutElements();
     if (!modal || !success) {
       alert('Merci pour votre commande !');
       return;
     }
-    if (form) form.hidden = true;
-    if (summary) summary.innerHTML = '';
     success.hidden = false;
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -279,7 +210,6 @@
     const checkoutBtn = document.getElementById('checkoutBtn');
     const closeCheckoutBtn = document.getElementById('closeCheckout');
     const checkoutOverlay = document.getElementById('checkoutOverlay');
-    const checkoutForm = document.getElementById('checkoutForm');
     const checkoutCloseSuccess = document.getElementById('checkoutCloseSuccess');
 
     if (openBtn) openBtn.addEventListener('click', openCart);
@@ -289,13 +219,7 @@
     if (checkoutBtn) checkoutBtn.addEventListener('click', startStripeCheckout);
     if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', closeCheckout);
     if (checkoutOverlay) checkoutOverlay.addEventListener('click', closeCheckout);
-    if (checkoutForm) checkoutForm.addEventListener('submit', submitCheckout);
-    if (checkoutCloseSuccess) {
-      checkoutCloseSuccess.addEventListener('click', () => {
-        closeCheckout();
-        resetCheckout();
-      });
-    }
+    if (checkoutCloseSuccess) checkoutCloseSuccess.addEventListener('click', closeCheckout);
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {

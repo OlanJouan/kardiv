@@ -165,11 +165,11 @@
   ];
 
   const checkoutModalHTML = `
-  <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Finaliser votre commande" hidden>
+  <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-label="Commande confirmée" hidden>
     <div class="checkout-overlay" id="checkoutOverlay"></div>
     <div class="checkout-panel">
       <div class="checkout-header">
-        <h2>Finaliser votre commande</h2>
+        <h2>Commande confirmée</h2>
         <button class="icon-btn close-checkout" id="closeCheckout" aria-label="Fermer">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -178,36 +178,6 @@
         </button>
       </div>
       <div class="checkout-body" id="checkoutBody">
-        <div id="checkoutSummary" class="checkout-summary"></div>
-        <form class="checkout-form" id="checkoutForm" novalidate>
-          <div class="form-group">
-            <label for="checkoutName">Nom complet</label>
-            <input type="text" id="checkoutName" name="name" required autocomplete="name">
-          </div>
-          <div class="form-group">
-            <label for="checkoutEmail">Email</label>
-            <input type="email" id="checkoutEmail" name="email" required autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label for="checkoutPhone">Téléphone</label>
-            <input type="tel" id="checkoutPhone" name="phone" required autocomplete="tel">
-          </div>
-          <div class="form-group">
-            <label for="checkoutAddress">Adresse de livraison</label>
-            <textarea id="checkoutAddress" name="address" required autocomplete="street-address"></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="checkoutCity">Ville</label>
-              <input type="text" id="checkoutCity" name="city" required autocomplete="address-level2">
-            </div>
-            <div class="form-group">
-              <label for="checkoutPostal">Code postal</label>
-              <input type="text" id="checkoutPostal" name="postal" required autocomplete="postal-code">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Confirmer la commande</button>
-        </form>
         <div id="checkoutSuccess" class="checkout-success" hidden>
           <h3>Merci pour votre commande !</h3>
           <p>Un email de confirmation vous sera envoyé sous peu.</p>
